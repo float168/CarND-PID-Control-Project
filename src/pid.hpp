@@ -1,5 +1,5 @@
-#ifndef PID_H
-#define PID_H
+#ifndef PID_HPP
+#define PID_HPP
 
 class PID {
  public:
@@ -47,4 +47,4 @@ class PID {
   double Kd;
 };
 
-#endif  // PID_H
+#endif  // PID_HPP
