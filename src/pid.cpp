@@ -1,30 +1,23 @@
 #include "pid.hpp"
 
-/**
- * TODO: Complete the PID class. You may add any additional desired functions.
- */
 
-PID::PID() {}
-
-PID::~PID() {}
-
-void PID::Init(double Kp_, double Ki_, double Kd_) {
-  /**
-   * TODO: Initialize PID coefficients (and errors, if needed)
-   */
-
-}
+PID::PID(double k_p, double k_i, double k_d)
+  : m_k_p(k_p), m_k_i(k_i), m_k_d(k_d)
+{}
 
 void PID::UpdateError(double cte) {
-  /**
-   * TODO: Update PID errors based on cte.
-   */
-
+  m_diff_cte = cte - m_cte;
+  m_cte = cte;
+  m_total_cte += cte;
 }
 
-double PID::TotalError() {
-  /**
-   * TODO: Calculate and return the total error
-   */
-  return 0.0;  // TODO: Add your total error calc here!
+double PID::GetTotalError() const {
+  return m_total_cte;
+}
+
+double PID::CalcSteeringValue(double speed, double angle) const {
+  double steer = - (m_k_p * m_cte + m_k_i * m_total_cte + m_k_d * m_diff_cte);
+  if (steer >  1.0) { steer =  1.0; }
+  if (steer < -1.0) { steer = -1.0; }
+  return steer;
 }

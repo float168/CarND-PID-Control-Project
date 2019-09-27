@@ -3,48 +3,22 @@
 
 class PID {
  public:
-  /**
-   * Constructor
-   */
-  PID();
+  PID(double k_p, double k_i, double k_d);
 
-  /**
-   * Destructor.
-   */
-  virtual ~PID();
-
-  /**
-   * Initialize PID.
-   * @param (Kp_, Ki_, Kd_) The initial PID coefficients
-   */
-  void Init(double Kp_, double Ki_, double Kd_);
-
-  /**
-   * Update the PID error variables given cross track error.
-   * @param cte The current cross track error
-   */
   void UpdateError(double cte);
 
-  /**
-   * Calculate the total PID error.
-   * @output The total PID error
-   */
-  double TotalError();
+  double GetTotalError() const;
+
+  double CalcSteeringValue(double speed, double angle) const;
 
  private:
-  /**
-   * PID Errors
-   */
-  double p_error;
-  double i_error;
-  double d_error;
+  const double m_k_p;
+  const double m_k_i;
+  const double m_k_d;
 
-  /**
-   * PID Coefficients
-   */ 
-  double Kp;
-  double Ki;
-  double Kd;
+  double m_cte = 0.0;
+  double m_diff_cte = 0.0;
+  double m_total_cte = 0.0;
 };
 
 #endif  // PID_HPP
