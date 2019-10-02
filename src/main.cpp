@@ -2,6 +2,7 @@
 #include <uWS/uWS.h>
 #include <iostream>
 #include <string>
+#include <fstream>
 #include "json.hpp"
 #include "pid.hpp"
 
@@ -43,7 +44,7 @@ int main(int argc, char** argv) {
   const double kd = std::strtod(argv[3], nullptr);
   PID pid(kp, ki, kd);
 
-  constexpr uint64_t total_count = 1800;
+  constexpr uint64_t total_count = 2400;
   uint64_t count = 0;
   h.onMessage([&pid,&count,kp,ki,kd](uWS::WebSocket<uWS::SERVER> ws,
                                      char *data,
@@ -66,7 +67,7 @@ int main(int argc, char** argv) {
           double speed = std::stod(j[1]["speed"].get<string>());
           double angle = std::stod(j[1]["steering_angle"].get<string>());
 
-          pid.UpdateError(cte);
+          pid.UpdateCTE(cte);
           double steer_value = pid.CalcSteeringValue(speed, angle);
 
           // DEBUG
@@ -74,10 +75,16 @@ int main(int argc, char** argv) {
             << " Steering Value: " << steer_value << std::endl;
 
           if (++count == total_count) {
-            std::cout << "kp ki kd total_cte\n";
-            std::cout << kp << " "<< ki << " " << kd << " "
-              << pid.GetTotalError() << std::endl;
-            exit(EXIT_SUCCESS);
+            const std::string fname = "total_error.txt";
+            bool exists = std::ifstream(fname) ? true : false;
+
+            std::ofstream f("total_error.txt", std::ios_base::app);
+            if (!exists) {
+              f << "kp ki kd total_cte count\n";
+            }
+
+            f << kp << " "<< ki << " " << kd
+              << " " << pid.GetTotalError() << " " << count << std::endl;
           }
 
           json msgJson;
