@@ -30,13 +30,18 @@ string hasData(string s) {
   return "";
 }
 
-int main() {
+int main(int argc, char** argv) {
   uWS::Hub h;
 
-  constexpr double k_p = 0.3;
-  constexpr double k_i = 0.0006;
-  constexpr double k_d = 1.2;
-  PID pid(k_p, k_i, k_d);
+  if (argc <= 3) {
+    std::cerr << "usage: " << argv[0] << " kp ki kd" << std::endl;
+    exit(EXIT_FAILURE);
+  }
+
+  const double kp = std::strtod(argv[1], nullptr);
+  const double ki = std::strtod(argv[2], nullptr);
+  const double kd = std::strtod(argv[3], nullptr);
+  PID pid(kp, ki, kd);
 
   h.onMessage([&pid](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, 
                      uWS::OpCode opCode) {
