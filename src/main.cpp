@@ -43,8 +43,12 @@ int main(int argc, char** argv) {
   const double kd = std::strtod(argv[3], nullptr);
   PID pid(kp, ki, kd);
 
-  h.onMessage([&pid](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, 
-                     uWS::OpCode opCode) {
+  constexpr uint64_t total_count = 1800;
+  uint64_t count = 0;
+  h.onMessage([&pid,&count,kp,ki,kd](uWS::WebSocket<uWS::SERVER> ws,
+                                     char *data,
+                                     size_t length,
+                                     uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
@@ -66,8 +70,15 @@ int main(int argc, char** argv) {
           double steer_value = pid.CalcSteeringValue(speed, angle);
 
           // DEBUG
-          std::cout << "CTE: " << cte << " Steering Value: " << steer_value 
-                    << std::endl;
+          std::cout << "[" << count << "] " << "CTE: " << cte
+            << " Steering Value: " << steer_value << std::endl;
+
+          if (++count == total_count) {
+            std::cout << "kp ki kd total_cte\n";
+            std::cout << kp << " "<< ki << " " << kd << " "
+              << pid.GetTotalError() << std::endl;
+            exit(EXIT_SUCCESS);
+          }
 
           json msgJson;
           msgJson["steering_angle"] = steer_value;
