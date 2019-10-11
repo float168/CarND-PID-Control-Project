@@ -34,14 +34,17 @@ string hasData(string s) {
 int main(int argc, char** argv) {
   uWS::Hub h;
 
-  if (argc <= 3) {
-    std::cerr << "usage: " << argv[0] << " kp ki kd" << std::endl;
-    exit(EXIT_FAILURE);
+  if (argc > 1) {
+    auto s = std::string(argv[1]);
+    if (s == "--help" || s == "-h" || argc <= 3) {
+      std::cerr << "usage: " << argv[0] << " kp ki kd" << std::endl;
+      exit(EXIT_FAILURE);
+    }
   }
 
-  const double kp = std::strtod(argv[1], nullptr);
-  const double ki = std::strtod(argv[2], nullptr);
-  const double kd = std::strtod(argv[3], nullptr);
+  const double kp = argc > 3 ? std::strtod(argv[1], nullptr) : 0.3;
+  const double ki = argc > 3 ? std::strtod(argv[2], nullptr) : 0.0006;
+  const double kd = argc > 3 ? std::strtod(argv[3], nullptr) : 1.2;
   PID pid(kp, ki, kd);
 
   constexpr uint64_t total_count = 2400;
