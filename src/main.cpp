@@ -42,9 +42,9 @@ int main(int argc, char** argv) {
     }
   }
 
-  const double kp = argc > 3 ? std::strtod(argv[1], nullptr) : 0.3;
+  const double kp = argc > 3 ? std::strtod(argv[1], nullptr) : 0.25;
   const double ki = argc > 3 ? std::strtod(argv[2], nullptr) : 0.0006;
-  const double kd = argc > 3 ? std::strtod(argv[3], nullptr) : 6.0;
+  const double kd = argc > 3 ? std::strtod(argv[3], nullptr) : 5.0;
   PID pid(kp, ki, kd);
 
   constexpr uint64_t total_count = 2400;
