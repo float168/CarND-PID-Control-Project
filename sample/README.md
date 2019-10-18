@@ -1,28 +1,5 @@
 # CarND-Controls-PID
-
-## Rubric Points: Reflection
-
-### Describe the effect each of the P, I, D components had in your implementation.
-
-"P" component is "proportional" part, which determines the basic behavior of car.
-It determines steer angle by the proportional value to the error from the center.
-
-"I" component is "intergral" part, which has a role to make the car back to the center
-when the car is off center for a long time.
-It determines steer angle by the summation of all the error up to the present.
-This component is usually much smaller value than the other components.
-
-"D" component is "differential" part, which prevents overshooting caused by "P" component.
-It determines steer angle by the difference between the current error and the the previous error.
-
-### Describe how the final hyperparameters were chosen.
-
-I had manually set all hyperparameters.
-First, I set "I" and "D" as zero and only tuned "P" value.
-This time I thought P=0.25 was good enough, and the car occilated during running on the road.
-Then I changed "D" value to prevent occilation (overshooting).
-I set D=5.0 and the car behavior looked more stable.
-Then I set "I" value as 0.0006.
+Self-Driving Car Engineer Nanodegree Program
 
 ---
 

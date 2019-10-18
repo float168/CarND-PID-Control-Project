@@ -2,8 +2,9 @@
 #include <uWS/uWS.h>
 #include <iostream>
 #include <string>
+#include <fstream>
 #include "json.hpp"
-#include "PID.h"
+#include "pid.hpp"
 
 // for convenience
 using nlohmann::json;
@@ -30,16 +31,28 @@ string hasData(string s) {
   return "";
 }
 
-int main() {
+int main(int argc, char** argv) {
   uWS::Hub h;
 
-  PID pid;
-  /**
-   * TODO: Initialize the pid variable.
-   */
+  if (argc > 1) {
+    auto s = std::string(argv[1]);
+    if (s == "--help" || s == "-h" || argc <= 3) {
+      std::cerr << "usage: " << argv[0] << " kp ki kd" << std::endl;
+      exit(EXIT_FAILURE);
+    }
+  }
 
-  h.onMessage([&pid](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, 
-                     uWS::OpCode opCode) {
+  const double kp = argc > 3 ? std::strtod(argv[1], nullptr) : 0.25;
+  const double ki = argc > 3 ? std::strtod(argv[2], nullptr) : 0.0006;
+  const double kd = argc > 3 ? std::strtod(argv[3], nullptr) : 5.0;
+  PID pid(kp, ki, kd);
+
+  constexpr uint64_t total_count = 2400;
+  uint64_t count = 0;
+  h.onMessage([&pid,&count,kp,ki,kd](uWS::WebSocket<uWS::SERVER> ws,
+                                     char *data,
+                                     size_t length,
+                                     uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
@@ -56,17 +69,26 @@ int main() {
           double cte = std::stod(j[1]["cte"].get<string>());
           double speed = std::stod(j[1]["speed"].get<string>());
           double angle = std::stod(j[1]["steering_angle"].get<string>());
-          double steer_value;
-          /**
-           * TODO: Calculate steering value here, remember the steering value is
-           *   [-1, 1].
-           * NOTE: Feel free to play around with the throttle and speed.
-           *   Maybe use another PID controller to control the speed!
-           */
-          
+
+          pid.UpdateCTE(cte);
+          double steer_value = pid.CalcSteeringValue(speed, angle);
+
           // DEBUG
-          std::cout << "CTE: " << cte << " Steering Value: " << steer_value 
-                    << std::endl;
+          std::cout << "[" << count << "] " << "CTE: " << cte
+            << " Steering Value: " << steer_value << std::endl;
+
+          if (++count == total_count) {
+            const std::string fname = "total_error.txt";
+            bool exists = std::ifstream(fname) ? true : false;
+
+            std::ofstream f("total_error.txt", std::ios_base::app);
+            if (!exists) {
+              f << "kp ki kd total_cte count\n";
+            }
+
+            f << kp << " "<< ki << " " << kd
+              << " " << pid.GetTotalError() << " " << count << std::endl;
+          }
 
           json msgJson;
           msgJson["steering_angle"] = steer_value;
