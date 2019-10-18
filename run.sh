@@ -6,7 +6,11 @@ if (( $# > 0 && $# < 3 )); then
    exit 1
 fi
 
-simulator=$PWD/../../simulator/term2_sim_linux/term2_sim_linux/term2_sim.x86_64
+if [[ $(uname -s) == Darwin ]]; then
+   simulator=$PWD/../../simulator/term2_sim_mac/term2_sim_mac/term2_sim.app
+else
+   simulator=$PWD/../../simulator/term2_sim_linux/term2_sim_linux/term2_sim.x86_64
+fi
 
 cd build
 cmake ..

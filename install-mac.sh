@@ -1,3 +1,5 @@
+set -x
+
 brew install openssl libuv cmake
 git clone https://github.com/uWebSockets/uWebSockets 
 cd uWebSockets
@@ -6,8 +8,8 @@ patch CMakeLists.txt < ../cmakepatch.txt
 mkdir build
 export PKG_CONFIG_PATH=/usr/local/opt/openssl/lib/pkgconfig 
 cd build
-OPENSSL_VERSION=`openssl version -v | cut -d' ' -f2`
-cmake -DOPENSSL_ROOT_DIR=$(brew --cellar openssl)/$OPENSSL_VERSION -DOPENSSL_LIBRARIES=$(brew --cellar openssl)/$OPENSSL_VERSION/lib ..
+OPENSSL_PATH=$(brew info openssl | awk 'NR==4' | cut -d ' ' -f 1)
+cmake -DOPENSSL_ROOT_DIR=$OPENSSL_PATH -DOPENSSL_LIBRARIES=$OPENSSL_PATH
 make 
 sudo make install
 cd ..
