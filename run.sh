@@ -7,7 +7,7 @@ if (( $# > 0 && $# < 3 )); then
 fi
 
 if [[ $(uname -s) == Darwin ]]; then
-   simulator=$PWD/../../simulator/term2_sim_mac/term2_sim_mac/term2_sim.app
+   simulator=$PWD/../../simulator/term2_sim_mac/term2_sim_mac/term2_sim.app/Contents/MacOS/term2_sim_mac
 else
    simulator=$PWD/../../simulator/term2_sim_linux/term2_sim_linux/term2_sim.x86_64
 fi
